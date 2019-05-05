@@ -12,13 +12,13 @@ const puppeteer = require('puppeteer');
 const expect = require('chai').expect;
 const {startServer} = require('polyserve');
 const path = require('path');
-const appUrl = 'http://127.0.0.1:4444';
+const appUrl = 'http://127.0.0.1:4424';
 
 describe('routing tests', function() {
   let polyserve, browser, page;
 
   before(async function() {
-    polyserve = await startServer({port:4444, root:path.join(__dirname, '../..'), moduleResolution:'node'});
+    polyserve = await startServer({port:4424, root:path.join(__dirname, '../..'), moduleResolution:'node'});
   });
 
   after((done) => polyserve.close(done));

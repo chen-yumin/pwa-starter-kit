@@ -17,13 +17,13 @@ const PNG = require('pngjs').PNG;
 const pixelmatch = require('pixelmatch');
 
 const currentDir = `${process.cwd()}/test/integration/screenshots-current`;
-const baselineDir = `${process.cwd()}/test/integration/screenshots-baseline`;
+const baselineDir = `${process.cwd()}/test/integration/screenshots-baseline-${process.platform}`;
 
 describe('👀 page screenshots are correct', function() {
   let polyserve, browser, page;
 
   before(async function() {
-    polyserve = await startServer({port:4444, root:path.join(__dirname, '../..'), moduleResolution:'node'});
+    polyserve = await startServer({port:4424, root:path.join(__dirname, '../..'), moduleResolution:'node'});
 
     // Create the test directory if needed.
     if (!fs.existsSync(currentDir)){
@@ -96,7 +96,9 @@ async function takeAndCompareScreenshot(page, route, filePrefix) {
   // If you didn't specify a file, use the name of the route.
   let fileName = filePrefix + '/' + (route ? route : 'index');
 
-  await page.goto(`http://127.0.0.1:4444/${route}`);
+  await page.goto(`http://127.0.0.1:4424/${route}`, {
+    waitUntil: 'networkidle0'
+  });
   await page.screenshot({path: `${currentDir}/${fileName}.png`});
   return compareScreenshots(fileName);
 }
@@ -139,7 +141,7 @@ function compareScreenshots(view) {
       const fileSizeInBytes = stats.size;
       console.log(`📸 ${view}.png => ${fileSizeInBytes} bytes, ${percentDiff}% different`);
 
-      //diff.pack().pipe(fs.createWriteStream(`${currentDir}/${view}-diff.png`));
+      diff.pack().pipe(fs.createWriteStream(`${currentDir}/${view}-diff.png`));
       expect(numDiffPixels, 'number of different pixels').equal(0);
       resolve();
     }
